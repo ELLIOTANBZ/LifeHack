@@ -14,6 +14,8 @@ function App() {
   const [isListening, setIsListening] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("none");
   const [showChat, setShowChat] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+
 
 
   const recognitionRef = useRef(null);
@@ -97,7 +99,7 @@ const toggleMic = () => {
   return (
     <div className="App">
       <header className="app-header">
-        <h1>Equal Ground - Accessible Tutorials</h1>
+        <title>Equal Ground - Accessible Learning for All</title>
         <button
           aria-label="Toggle Blind Mode"
           onClick={() => setUserMode(userMode === 'blind' ? null : 'blind')}
@@ -117,7 +119,19 @@ const toggleMic = () => {
         {userMode === 'blind' && (
           <>
           <MagnifierToggle/>
-          <CameraFeed/>
+          <button
+            onClick={() => setShowCamera(prev => !prev)}
+            aria-expanded={showCamera}
+            aria-controls="camera-section"
+          >
+            {showCamera ? "🔒 Close Camera Section" : "📷 Camera Section for better visual accommodations"}
+          </button>
+
+          {showCamera && (
+            <div id="camera-section" role="region" aria-label="Camera Interaction Area">
+              <CameraFeed />
+            </div>
+          )}
           <FileToSpeech/>
           </>
         )}
@@ -148,8 +162,19 @@ const toggleMic = () => {
             </section>
 
             <DeafNote/>
-            <h3>To see Sign Language Intepretters better</h3>
-            <CameraFeed/>
+            <button
+            onClick={() => setShowCamera(prev => !prev)}
+            aria-expanded={showCamera}
+            aria-controls="camera-section"
+          >
+            {showCamera ? "🔒 Close Camera Section" : "(📷 Camera Section) I am unable to see my sign language intepretter clearly"}
+          </button>
+
+          {showCamera && (
+            <div id="camera-section" role="region" aria-label="Camera Interaction Area">
+              <CameraFeed />
+            </div>
+          )}
           </>
           )}
       </main>
