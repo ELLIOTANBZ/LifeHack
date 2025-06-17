@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 export default function VoiceAssistant({ setUserMode, setShowChat, setMagnifier, toggleCamera, startCamera, stopCamera, takeSnapshot, adjustFilter }) {
   const recognitionRef = useRef(null);
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(true); // Always listening by default
 
   // Initialize speech recognition
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function VoiceAssistant({ setUserMode, setShowChat, setMagnifier,
     recognitionRef.current = recognition;
   }, [setUserMode, setShowChat, setMagnifier, toggleCamera, startCamera, stopCamera, takeSnapshot, adjustFilter]);
 
-  // Start/Stop recognition based on active toggle
+  // Start/Stop recognition based on active state
   useEffect(() => {
     const recognition = recognitionRef.current;
     if (!recognition) return;
@@ -85,18 +85,6 @@ export default function VoiceAssistant({ setUserMode, setShowChat, setMagnifier,
       console.log("🛑 Speech recognition stopped");
     }
   }, [active]);
-
-  // Listen to spacebar key
-  useEffect(() => {
-    const handleKeydown = (e) => {
-      if (e.code === "Space") {
-        e.preventDefault();
-        setActive(prev => !prev);
-      }
-    };
-    window.addEventListener("keydown", handleKeydown);
-    return () => window.removeEventListener("keydown", handleKeydown);
-  }, []);
 
   const speak = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
@@ -116,7 +104,7 @@ export default function VoiceAssistant({ setUserMode, setShowChat, setMagnifier,
       fontSize: '0.9rem',
       zIndex: 9999
     }}>
-      {active ? "🎙 Listening (Spacebar to stop)" : "🛑 Not Listening (Press Spacebar)"}
+      {active ? "🎙 Listening..." : "🛑 Not Listening"}
     </div>
   );
 }

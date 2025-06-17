@@ -18,6 +18,8 @@ const DeafNote = () => {
                 border: "1px solid #ccc",
                 borderRadius: "5px",
                 resize: "vertical",
+                backgroundColor: "whitesmoke",
+                color: "black"
             }}
         aria-label="Deaf user notes section"
     ></textarea>

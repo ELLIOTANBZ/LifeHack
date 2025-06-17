@@ -212,6 +212,7 @@ function App() {
               <h3>Deaf User Talk</h3>
               <label htmlFor="deafTextInput">Type your message</label>
               <input
+                className="deaf-box"
                 id="deafTextInput"
                 type="text"
                 value={textInput}

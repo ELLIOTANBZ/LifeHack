@@ -84,7 +84,7 @@ function FileToSpeech() {
 
   return (
   <div className="file-to-speech">
-    <h3 className="upload-title">📂 Upload File & Read Aloud</h3>  {/* Add a specific class here */}
+    <h3 className="upload-title">📂 Upload File & Read Aloud (Insert Word Document)</h3>  {/* Add a specific class here */}
     <input type="file" accept=".txt,.pdf,.docx" onChange={handleFileChange} />
 
     {extractedText && (
