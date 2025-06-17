@@ -83,26 +83,27 @@ function FileToSpeech() {
   };
 
   return (
-    <div className="file-to-speech">
-      <h3>📂 Upload File & Read Aloud</h3>
-      <input type="file" accept=".txt,.pdf,.docx" onChange={handleFileChange} />
+  <div className="file-to-speech">
+    <h3 className="upload-title">📂 Upload File & Read Aloud</h3>  {/* Add a specific class here */}
+    <input type="file" accept=".txt,.pdf,.docx" onChange={handleFileChange} />
 
-      {extractedText && (
-        <>
-          <div style={{ marginTop: "10px" }}>
-            <button onClick={speakText}>🔊 Read Aloud</button>
-            <button onClick={pauseSpeech}>⏸ Pause</button>
-            <button onClick={resumeSpeech}>▶️ Resume</button>
-            <button onClick={stopSpeech}>⏹ Stop</button>
-          </div>
+    {extractedText && (
+      <>
+        <div style={{ marginTop: "10px" }}>
+          <button onClick={speakText}>🔊 Read Aloud</button>
+          <button onClick={pauseSpeech}>⏸ Pause</button>
+          <button onClick={resumeSpeech}>▶️ Resume</button>
+          <button onClick={stopSpeech}>⏹ Stop</button>
+        </div>
 
-          <pre style={{ whiteSpace: "pre-wrap", background: "#000000", padding: "10px", marginTop: "10px" }}>
-            {extractedText}
-          </pre>
-        </>
-      )}
-    </div>
-  );
+        <pre className="extracted-text" style={{ whiteSpace: "pre-wrap", background: "#000000", padding: "10px", marginTop: "10px" }}>
+          {extractedText}
+        </pre>
+      </>
+    )}
+  </div>
+);
+
 }
 
 export default FileToSpeech;
