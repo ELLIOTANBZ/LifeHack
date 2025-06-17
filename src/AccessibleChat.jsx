@@ -78,17 +78,6 @@ function AccessibleChat() {
         ))}
       </div>
 
-    {signVideoUrl && (<div style={{ marginTop: "15px" }}>
-        <h4>Sign Language Interpretation</h4>
-        <video
-        src={signVideoUrl}
-        controls
-        autoPlay
-        style={{ maxWidth: "100%", border: "2px solid #ccc" }}
-        />
-    </div>
-    )}
-
 
       <div style={styles.inputArea}>
         <input
@@ -192,16 +181,6 @@ async function enableEnhancedAudio() {
   }
 }
 
-function generateSignLanguageVideo(text) {
-  const lowerText = text.toLowerCase();
-  if (lowerText.includes("hello")) {
-    setSignVideoUrl("/videos/hello.mp4");
-  } else if (lowerText.includes("how are you")) {
-    setSignVideoUrl("/videos/how_are_you.mp4");
-  } else {
-    setSignVideoUrl("/videos/default.mp4");
-  }
-}
 
 
 export default AccessibleChat;

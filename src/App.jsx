@@ -94,7 +94,7 @@ const toggleMic = () => {
   return (
     <div className="App">
       <header className="app-header">
-        <h1>EduBridge – Accessible Tutorials</h1>
+        <h1>Equal Ground - Accessible Tutorials</h1>
         <button aria-label="Toggle Blind Mode">Blind Mode</button>
         <MagnifierToggle/>
         <button aria-label="Toggle Deaf Mode">Deaf Mode</button>
