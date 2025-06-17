@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { createRNNWasmModule } from '@jitsi/rnnoise-wasm';
 
 function AccessibleChat() {
   const [chatLog, setChatLog] = useState([]);
@@ -64,7 +63,6 @@ function AccessibleChat() {
   const enableEnhancedAudio = async () => {
     try {
       const rnnoiseModule = await createRNNWasmModule(); // Load WASM and JS glue code
-      const denoiseState = new rnnoiseModule.DenoiseState();
 
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
