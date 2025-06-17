@@ -1,12 +1,47 @@
-# React + Vite
+# 📚 Equal Ground -- Accessible learning for all 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Equal Ground is a web-based EdTech platform that helps students with disabilities interact with tutors effectively. The project focuses on supporting two key groups:
 
-Currently, two official plugins are available:
+👩‍🦯 Students who are blind or visually impaired
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🧏 Students who are deaf or hard of hearing
 
-## Expanding the ESLint configuration
+<img width="1313" alt="Screenshot 2025-06-17 at 11 04 09 PM" src="https://github.com/user-attachments/assets/a96edc0b-2946-4f3c-94e3-4943f6eea8a9" />
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ✨ Features
+For Blind / Visually Impaired Users:
+- 📂 Upload & Read Aloud: Upload .docx files and have them read aloud with text-to-speech.
+
+- 🔍 Magnifier Tool: Toggle a screen magnifier to zoom in on any part of the page.
+
+- 📷 Camera View Enhancements: Use a live camera feed with filters like grayscale, inverted colors, or brightness adjustments to improve visibility.
+
+For Deaf / Hard-of-Hearing Users: 
+- 💬 Chat Interface: Type and send questions to a tutor; speech synthesis reads them aloud.
+
+- 🎙️ Speech-to-Text: Real-time transcription of tutor speech using browser-based speech recognition.
+
+- 🎧 Enhanced Hearing Mode: Use RNNoise to suppress background noise from tutor microphone input.
+
+## 🚀 Getting started 
+```
+git clone https://github.com/ELLIOTANBZ/LifeHack.git
+```
+```
+cd LifeHack
+```
+```
+npm install
+```
+```
+npm run dev
+
+```
+
+## 🙋‍♀️ Collaborators 
+Team: Jun Hao (5)
+Developers: @elliotanbz @farbutnear @chloeongzy 
+
+
+
+
