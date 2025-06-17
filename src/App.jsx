@@ -6,6 +6,7 @@ import AccessibleChat from "./AccessibleChat.jsx";
 import MagnifierToggle from "./MagnifierToggle.jsx";
 
 function App() {
+  const [userMode, setUserMode] = useState('blind'); 
   const [textInput, setTextInput] = useState("");
   const [transcript, setTranscript] = useState("Waiting for tutor speech...");
   const [isListening, setIsListening] = useState(false);
@@ -95,36 +96,56 @@ const toggleMic = () => {
     <div className="App">
       <header className="app-header">
         <h1>Equal Ground - Accessible Tutorials</h1>
-        <button aria-label="Toggle Blind Mode">Blind Mode</button>
-        <MagnifierToggle/>
-        <button aria-label="Toggle Deaf Mode">Deaf Mode</button>
+        <button
+          aria-label="Toggle Blind Mode"
+          onClick={() => setUserMode(userMode === 'blind' ? null : 'blind')}
+        >
+          {userMode === 'blind' ? '👁️ Blind Mode ON' : 'Blind Mode'}
+        </button>
+
+    <button
+      aria-label="Toggle Deaf Mode"
+      onClick={() => setUserMode(userMode === 'deaf' ? null : 'deaf')}
+    >
+      {userMode === 'deaf' ? '🦻 Deaf Mode ON' : 'Deaf Mode'}
+    </button>
       </header>
 
       <main className="app-main">
-        <button onClick={() => setShowChat(!showChat)}>
-          💬 Ask Tutor a Question
-        </button>
-        {showChat && <AccessibleChat />}
+        {userMode === 'blind' && (
+          <>
+          <MagnifierToggle/>
+          <CameraFeed/>
+          <FileToSpeech/>
+          </>
+        )}
+
+        {userMode === 'deaf' && (
+          <>
+            <button onClick={() => setShowChat(!showChat)}>💬 Ask Tutor a Question</button>
+            {showChat && <AccessibleChat />}
         
 
-        <section className="transcript-area" aria-live="polite">
-          <h3>Live Transcript</h3>
-          <p>{transcript}</p>
-          <button onClick={toggleMic}>
-            {isListening ? "🛑 Stop Mic" : "🎤 Start Mic"}
-          </button>
-        </section>
+            <section className="transcript-area" aria-live="polite">
+              <h3>Live Transcript</h3>
+              <p>{transcript}</p>
+              <button onClick={toggleMic}>
+                {isListening ? "🛑 Stop Mic" : "🎤 Start Mic"}
+              </button>
+            </section>
 
-        <section className="speak-to-tutor">
-          <h3>Deaf User Talk</h3>
-          <input
-            type="text"
-            aria-label="Type your message"
-            value={textInput}
-            onChange={(e) => setTextInput(e.target.value)}
-          />
-          <button onClick={() => speak(textInput)}>🗣 Speak to Tutor</button>
-        </section>
+            <section className="speak-to-tutor">
+              <h3>Deaf User Talk</h3>
+              <input
+                type="text"
+                aria-label="Type your message"
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+              />
+              <button onClick={() => speak(textInput)}>🗣 Speak to Tutor</button>
+            </section>
+          </>
+          )}
       </main>
     </div>
   );
