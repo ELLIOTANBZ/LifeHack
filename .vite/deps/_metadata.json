@@ -1,0 +1,46 @@
+{
+  "hash": "b4c4dc01",
+  "configHash": "9fe5da0f",
+  "lockfileHash": "85038e0f",
+  "browserHash": "c379dd8b",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "e06629ef",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "388ba4e2",
+      "needsInterop": true
+    },
+    "pdfjs-dist": {
+      "src": "../../node_modules/pdfjs-dist/build/pdf.mjs",
+      "file": "pdfjs-dist.js",
+      "fileHash": "d6c6a4b0",
+      "needsInterop": false
+    },
+    "mammoth": {
+      "src": "../../node_modules/mammoth/lib/index.js",
+      "file": "mammoth.js",
+      "fileHash": "5798030b",
+      "needsInterop": true
+    },
+    "@jitsi/rnnoise-wasm": {
+      "src": "../../node_modules/@jitsi/rnnoise-wasm/index.js",
+      "file": "@jitsi_rnnoise-wasm.js",
+      "fileHash": "0018723d",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-Z3VRQX5G": {
+      "file": "chunk-Z3VRQX5G.js"
+    },
+    "chunk-H5PKAWWC": {
+      "file": "chunk-H5PKAWWC.js"
+    }
+  }
+}
