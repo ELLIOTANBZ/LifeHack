@@ -9,12 +9,12 @@ import VoiceAssistant from "./VoiceAssistant.jsx";
 
 function App() {
   const [userMode, setUserMode] = useState('blind'); 
-  const [textInput, setTextInput] = useState("");
   const [transcript, setTranscript] = useState("Waiting for tutor speech...");
   const [isListening, setIsListening] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [magnifier, setMagnifier] = useState(false);
+  const disableMagnifier = () => setMagnifier(false);
 
   const [cameraOn, setCameraOn] = useState(false);
   const [filters, setFilters] = useState({ brightness: 1, contrast: 1, grayscale: 0, invert: 0 });
@@ -51,7 +51,8 @@ function App() {
 
   const adjustFilter = (key, delta) => {
     setFilters(prev => {
-      const newValue = Math.min(Math.max(prev[key] + delta, 0), key === 'contrast' ? 3 : 2);
+      const maxVal = (key === 'contrast') ? 3 : 2;
+      const newValue = Math.min(Math.max(prev[key] + delta, 0), maxVal);
       return { ...prev, [key]: parseFloat(newValue.toFixed(1)) };
     });
   };
@@ -156,6 +157,7 @@ function App() {
           setUserMode={setUserMode} 
           setShowChat={setShowChat} 
           setMagnifier={setMagnifier} 
+          disableMagnifier={disableMagnifier}
           toggleCamera={() => setShowCamera(prev => !prev)}
           startCamera={startCamera}
           stopCamera={stopCamera}
@@ -208,9 +210,7 @@ function App() {
                 {isListening ? "🛑 Stop Mic" : "🎤 Start Mic"}
               </button>
             </div>
-            
-              <DeafNote />
-            
+            <DeafNote />
           </>
         )}
       </main>

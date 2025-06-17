@@ -4,6 +4,7 @@ export default function VoiceAssistant({
   setUserMode,
   setShowChat,
   setMagnifier,
+  disableMagnifier,
   toggleCamera,
   startCamera,
   stopCamera,
@@ -11,9 +12,8 @@ export default function VoiceAssistant({
   adjustFilter
 }) {
   const recognitionRef = useRef(null);
-  const [active, setActive] = useState(false); // Starts inactive by default
+  const [active, setActive] = useState(false); // Starts inactive
 
-  // Initialize speech recognition
   useEffect(() => {
     if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
       console.warn("Browser does not support Speech Recognition");
@@ -77,7 +77,6 @@ export default function VoiceAssistant({
     recognitionRef.current = recognition;
   }, [setUserMode, setShowChat, setMagnifier, toggleCamera, startCamera, stopCamera, takeSnapshot, adjustFilter]);
 
-  // Start/Stop recognition based on active toggle
   useEffect(() => {
     const recognition = recognitionRef.current;
     if (!recognition) return;
@@ -95,7 +94,6 @@ export default function VoiceAssistant({
     }
   }, [active]);
 
-  // Push-to-talk with spacebar, but skip if focused on input
   useEffect(() => {
     const handleKeydown = (e) => {
       const activeElement = document.activeElement;
@@ -105,7 +103,7 @@ export default function VoiceAssistant({
         activeElement.isContentEditable;
 
       if (e.code === "Space" && !isInputFocused) {
-        e.preventDefault(); // Only prevent default if not in input
+        e.preventDefault();
         setActive(prev => !prev);
       }
     };
