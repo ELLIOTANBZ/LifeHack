@@ -6,7 +6,7 @@
 }
 
 .app-header {
-  background: #a75353;
+  background: #2e2e2e;
   color: white;
   padding: 1.5rem;
   display: flex;
@@ -27,6 +27,7 @@
   padding: 1.5rem;
   border-radius: 10px;
   border: 2px solid #ccc;
+  color: black;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
@@ -72,6 +73,7 @@ button:hover {
   background: white;
   border: 2px solid #ccc;
   padding: 1rem;
+  color: black;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   margin-top: 2rem;
