@@ -5,6 +5,7 @@ import FileToSpeech from "./FileToSpeech";
 import AccessibleChat from "./AccessibleChat.jsx";
 import MagnifierToggle from "./MagnifierToggle.jsx";
 import DeafNote from "./DeafNote.jsx";
+import VoiceAssistant from "./VoiceAssistant.jsx";
 
 function App() {
   const [userMode, setUserMode] = useState('blind'); 
@@ -12,10 +13,51 @@ function App() {
   const [transcript, setTranscript] = useState("Waiting for tutor speech...");
   const [isListening, setIsListening] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  const [showCamera, setShowCamera] = useState(false);
+  const [showCamera, setShowCamera] = useState(true);
+  const [magnifier, setMagnifier] = useState(false);
+
+  const [cameraOn, setCameraOn] = useState(false);
+  const [filters, setFilters] = useState({ brightness: 1, contrast: 1, grayscale: 0, invert: 0 });
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        setCameraOn(true);
+      }
+    } catch (err) {
+      console.error("Error starting camera:", err);
+    }
+  };
+
+  const stopCamera = () => {
+    const stream = videoRef.current?.srcObject;
+    stream?.getTracks().forEach(track => track.stop());
+    setCameraOn(false);
+  };
+
+  const takeSnapshot = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+    const ctx = canvas.getContext("2d");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  };
+
+  const adjustFilter = (key, delta) => {
+    setFilters(prev => {
+      const newValue = Math.min(Math.max(prev[key] + delta, 0), key === 'contrast' ? 3 : 2);
+      return { ...prev, [key]: parseFloat(newValue.toFixed(1)) };
+    });
+  };
+
   const recognitionRef = useRef(null);
 
-  // Request mic access
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({
       audio: {
@@ -28,7 +70,6 @@ function App() {
     });
   }, []);
 
-  // Setup speech recognition
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -61,19 +102,24 @@ function App() {
     recognitionRef.current = recognition;
   }, []);
 
-  // Toggle mic
+  useEffect(() => {
+    console.log("🦻 userMode changed:", userMode);
+  }, [userMode]);
+
   const toggleMic = () => {
     const recognition = recognitionRef.current;
     if (!recognition) return;
 
     if (isListening) {
-      recognition.onend = null;
+      recognition.onend = null; 
       recognition.stop();
       setIsListening(false);
       setTranscript(prev => prev + " ⏹️ Mic stopped.");
     } else {
       recognition.onend = () => {
-        if (isListening) recognition.start();
+        if (isListening) {
+          recognition.start(); 
+        }
       };
       recognition.start();
       setTranscript("🎙 Listening...");
@@ -81,100 +127,111 @@ function App() {
     }
   };
 
-  // Speech output for deaf users
-  function speak(text) {
+  const speak = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
     window.speechSynthesis.speak(utterance);
-  }
+  };
 
   return (
     <div className="App">
       <header className="app-header">
-        <h1 id="main-title">Equal Ground - Accessible Tutorials</h1>
-        <div className="mode-buttons">
-          <button
-            aria-label={userMode === 'blind' ? 'Disable Blind Mode' : 'Enable Blind Mode'}
-            onClick={() => setUserMode(userMode === 'blind' ? null : 'blind')}
-          >
-            {userMode === 'blind' ? '👁️ Blind Mode ON' : 'Blind Mode'}
-          </button>
-          <button
-            aria-label={userMode === 'deaf' ? 'Disable Deaf Mode' : 'Enable Deaf Mode'}
-            onClick={() => setUserMode(userMode === 'deaf' ? null : 'deaf')}
-          >
-            {userMode === 'deaf' ? '🦻 Deaf Mode ON' : 'Deaf Mode'}
-          </button>
-        </div>
+        <h1>Equal Ground - Accessible Tutorials</h1>
+        <button
+          aria-label="Toggle Blind Mode"
+          onClick={() => setUserMode(userMode === 'blind' ? null : 'blind')}
+        >
+          {userMode === 'blind' ? '👁️ Blind Mode ON' : 'Blind Mode'}
+        </button>
+
+        <button
+          aria-label="Toggle Deaf Mode"
+          onClick={() => setUserMode(userMode === 'deaf' ? null : 'deaf')}
+        >
+          {userMode === 'deaf' ? '🦻 Deaf Mode ON' : 'Deaf Mode'}
+        </button>
       </header>
 
       <main className="app-main">
+        <VoiceAssistant 
+          setUserMode={setUserMode} 
+          setShowChat={setShowChat} 
+          setMagnifier={setMagnifier} 
+          toggleCamera={() => setShowCamera(prev => !prev)}
+          startCamera={startCamera}
+          stopCamera={stopCamera}
+          takeSnapshot={takeSnapshot}
+          adjustFilter={adjustFilter}
+        />
+
         {userMode === 'blind' && (
-  <>
-    <div className="blind-tools-row">
-      <div className="tool-box no-border">
-        <MagnifierToggle />
-      </div>
-
-      <div className="tool-box no-border">
-        <button onClick={() => setShowCamera(prev => !prev)}>
-          {showCamera ? "🔒 Close Camera Section" : "📷 Camera Section"}
-        </button>
-        {showCamera && (
-          <div>
-            <CameraFeed />
-          </div>
+          <>
+            <div className="blind-tools-row">
+              <div className="tool-box no-border">
+                <MagnifierToggle enabled={magnifier} toggle={() => setMagnifier(prev => !prev)} />
+              </div>
+              <div className="tool-box no-border">
+                <button onClick={() => setShowCamera(prev => !prev)}>
+                  {showCamera ? "🔒 Close Camera Section" : "📷 Camera Section"}
+                </button>
+                {showCamera && (
+                  <div>
+                    <CameraFeed
+                      videoRef={videoRef}
+                      canvasRef={canvasRef}
+                      cameraOn={cameraOn}
+                      startCamera={startCamera}
+                      stopCamera={stopCamera}
+                      takeSnapshot={takeSnapshot}
+                      filters={filters}
+                      setFilters={setFilters}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="section-box">
+              <FileToSpeech />
+            </div>
+          </>
         )}
-      </div>
-    </div>
 
-    <div className="section-box">
-      <FileToSpeech />
-    </div>
-  </>
-)}
-
-
-
-
-{userMode === 'deaf' && (
-  <>
-    <div className="section-box">
-      <button onClick={() => setShowChat(!showChat)}>💬 Ask Tutor a Question</button>
-      {showChat && <AccessibleChat />}
-    </div>
-
-    <div className="section-box transcript-area">
-      <h3>Live Transcript</h3>
-      <p>{transcript}</p>
-      <button onClick={toggleMic}>
-        {isListening ? "🛑 Stop Mic" : "🎤 Start Mic"}
-      </button>
-    </div>
-
-    <div className="section-box speak-to-tutor">
-      <h3>Deaf User Talk</h3>
-      <label htmlFor="deafTextInput">Type your message   </label>
-      <input
-        id="deafTextInput"
-        type="text"
-        value={textInput}
-        onChange={(e) => setTextInput(e.target.value)}
-      />
-      <button onClick={() => speak(textInput)}>🗣 Speak to Tutor</button>
-    </div>
-
-    <div className="section-box">
-      <DeafNote />
-    </div>
-
-    <div className="section-box">
-      <button onClick={() => setShowCamera(prev => !prev)}>
-        {showCamera ? "🔒 Close Camera" : "📷 I can't see my interpreter clearly"}
-      </button>
-      {showCamera && <CameraFeed />}
-    </div>
-  </>
-)}
+        {userMode === 'deaf' && (
+          <>
+            <div className="section-box">
+              <button onClick={() => setShowChat(!showChat)}>💬 Ask Tutor a Question</button>
+              {showChat && <AccessibleChat />}
+            </div>
+            <div className="section-box transcript-area">
+              <h3>Live Transcript</h3>
+              <p>{transcript}</p>
+              <button onClick={toggleMic}>
+                {isListening ? "🛑 Stop Mic" : "🎤 Start Mic"}
+              </button>
+            </div>
+            <div className="section-box speak-to-tutor">
+              <h3>Deaf User Talk</h3>
+              <label htmlFor="deafTextInput">Type your message</label>
+              <input
+                id="deafTextInput"
+                type="text"
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+              />
+              <button onClick={() => speak(textInput)}>🗣 Speak to Tutor</button>
+            </div>
+            <div className="section-box">
+              <DeafNote />
+            </div>
+            <div className="section-box">
+              <button onClick={() => setShowCamera(prev => !prev)}>
+                {showCamera ? "🔒 Close Camera" : "📷 I can't see my interpreter clearly"}
+              </button>
+              {showCamera && (
+                <CameraFeed />
+              )}
+            </div>
+          </>
+        )}
       </main>
     </div>
   );
