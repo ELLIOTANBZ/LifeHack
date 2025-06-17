@@ -5,7 +5,7 @@ import FileToSpeech from "./FileToSpeech";
 import AccessibleChat from "./AccessibleChat.jsx";
 import MagnifierToggle from "./MagnifierToggle.jsx";
 import DeafNote from "./DeafNote.jsx";
-import DeafCamera from "./DeafCamera.jsx";
+
 
 function App() {
   const [userMode, setUserMode] = useState('blind'); 

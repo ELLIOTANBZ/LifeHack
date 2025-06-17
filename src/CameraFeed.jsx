@@ -17,13 +17,21 @@ function CameraFeed() {
   const takeSnapshot = () => {
   const video = videoRef.current;
   const canvas = canvasRef.current;
+
   if (video && canvas) {
     const ctx = canvas.getContext("2d");
+
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
+
+    // Copy computed filter styles from video
+    const filter = getComputedStyle(video).filter;
+    ctx.filter = filter; // Apply the same filter to the canvas
+
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    }
+  }
   };
+
   
   const startCamera = async () => {
     try {

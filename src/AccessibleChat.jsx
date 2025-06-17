@@ -8,7 +8,6 @@ function AccessibleChat() {
   const recognitionRef = useRef(null);
   const [availableMics, setAvailableMics] = useState([]);
   const [preferredMic, setPreferredMic] = useState(null);
-  const [micStream, setMicStream] = useState(null);
 
   // Initialize STT
   useEffect(() => {
@@ -26,7 +25,6 @@ function AccessibleChat() {
     recognition.onresult = async (event) => {
       const speechResult = event.results[0][0].transcript;
       setChatLog((prev) => [...prev, { sender: "Tutor", message: speechResult }]);
-      await generateSignLanguageVideo(speechResult);
     };
 
     recognition.onerror = (event) => {
@@ -36,8 +34,7 @@ function AccessibleChat() {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       const mics = devices.filter((device) => device.kind === "audioinput");
       setAvailableMics(mics);
-    })
-    .catch((err) => console.error("Error listing microphones:", err));
+    }).catch((err) => console.error("Error listing microphones:", err));
 
     recognitionRef.current = recognition;
   }, []);
@@ -45,25 +42,41 @@ function AccessibleChat() {
   const sendQuestion = () => {
     if (studentInput.trim() === "") return;
 
-    // Add to chat log
     setChatLog((prev) => [...prev, { sender: "Student", message: studentInput }]);
-
-    // Speak it out loud
     speak(studentInput);
-
-    // Clear input
     setStudentInput("");
   };
 
   const listenForTutor = () => {
     if (!recognitionRef.current) return;
-
     recognitionRef.current.start();
     setIsListening(true);
+    recognitionRef.current.onend = () => setIsListening(false);
+  };
 
-    recognitionRef.current.onend = () => {
-      setIsListening(false);
-    };
+  const enableEnhancedAudio = async () => {
+    try {
+      const rnnoise = await createRNNWasmModule(); // auto-loads WASM
+      const denoiseState = new rnnoise.DenoiseState(); // ✅ correct constructor
+
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const source = audioContext.createMediaStreamSource(stream);
+      const processor = audioContext.createScriptProcessor(480, 1, 1);
+
+      processor.onaudioprocess = (event) => {
+        const input = event.inputBuffer.getChannelData(0);
+        const output = event.outputBuffer.getChannelData(0);
+        rnnoise.processFrame(denoiseState, input, output);
+      };
+
+      source.connect(processor);
+      processor.connect(audioContext.destination);
+
+      console.log("🎧 Enhanced hearing mode ON");
+    } catch (err) {
+      console.error("❌ Could not enable enhanced audio:", err);
+    }
   };
 
   return (
@@ -77,7 +90,6 @@ function AccessibleChat() {
           </p>
         ))}
       </div>
-
 
       <div style={styles.inputArea}>
         <input
@@ -95,18 +107,17 @@ function AccessibleChat() {
 
         <label>Select Tutor Microphone:</label>
         <select
-        value={preferredMic || ""}
-        onChange={(e) => setPreferredMic(e.target.value)}
+          value={preferredMic || ""}
+          onChange={(e) => setPreferredMic(e.target.value)}
         >
-        <option value="">-- Select a Microphone --</option>
-        {availableMics.map((mic) => (
+          <option value="">-- Select a Microphone --</option>
+          {availableMics.map((mic) => (
             <option key={mic.deviceId} value={mic.deviceId}>
-            {mic.label || "Unnamed Microphone"}
+              {mic.label || "Unnamed Microphone"}
             </option>
-        ))}
+          ))}
         </select>
         <button onClick={enableEnhancedAudio}>🎧 Enable Enhanced Hearing Mode</button>
-
       </div>
     </div>
   );
@@ -145,42 +156,5 @@ const styles = {
     fontSize: "1rem"
   }
 };
-
-async function enableEnhancedAudio() {
-  try {
-    const rnnoiseModule = await createRNNWasmModule();
-    const denoiseState = rnnoiseModule.createDenoiseState();
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const source = audioContext.createMediaStreamSource(stream);
-    const processor = audioContext.createScriptProcessor(480, 1, 1); // RNNoise frame = 480
-
-    source.connect(processor);
-    processor.connect(audioContext.destination);
-
-    processor.onaudioprocess = (event) => {
-      const input = event.inputBuffer.getChannelData(0);
-      const output = event.outputBuffer.getChannelData(0);
-
-      // Copy input to frame for RNNoise
-      const frame = new Float32Array(input);
-
-      // Process with RNNoise (in-place modification)
-      denoiseState.processFrame(frame);
-
-      // Write back to output
-      for (let i = 0; i < frame.length; i++) {
-        output[i] = frame[i];
-      }
-    };
-
-    console.log("🎧 RNNoise enhanced audio activated");
-  } catch (err) {
-    console.error("RNNoise initialization failed:", err);
-  }
-}
-
-
 
 export default AccessibleChat;

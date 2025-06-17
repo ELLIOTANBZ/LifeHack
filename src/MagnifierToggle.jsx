@@ -2,57 +2,61 @@ import React, { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 
 function MagnifierToggle() {
-    const [enabled, setEnabled] = useState(false);
-    const lensRef = useRef(null);
-    const [screenshot, setScreenshot] = useState(null);
+  const [enabled, setEnabled] = useState(false);
+  const lensRef = useRef(null);
+  const [screenshot, setScreenshot] = useState(null);
+  const zoom = 2;
+  const lensSize = 300;
 
-    const zoom = 2;
+  const takeScreenshot = async () => {
+    const lens = lensRef.current;
+    if (lens) lens.style.display = 'none';
+    
+    const canvas = await html2canvas(document.body, {
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.scrollHeight,
+    });
+    if (lens) lens.style.display = "block";
+    setScreenshot(canvas.toDataURL());
+  };
 
-    useEffect(() => {
+  useEffect(() => {
     if (!enabled) return;
 
-    const captureAndSetScreenshot = () => {
-        takeScreenshot(setScreenshot);
-    };
+    takeScreenshot();
 
-    // Take initial screenshot
-    captureAndSetScreenshot();
+    const handleUpdate = () => takeScreenshot();
+    window.addEventListener("scroll", handleUpdate);
+    window.addEventListener("resize", handleUpdate);
 
     const handleMouseMove = (e) => {
-        const lens = lensRef.current;
-        if (!lens || !screenshot) return;
+      const lens = lensRef.current;
+      if (!lens || !screenshot) return;
 
-        const lensSize = 300;
-        const x = e.clientX;
-        const y = e.clientY;
+      const x = e.pageX;
+      const y = e.pageY;
 
-        const scrollX = window.scrollX;
-        const scrollY = window.scrollY;
+      lens.style.left = `${x - lensSize / 2}px`;
+      lens.style.top = `${y - lensSize / 2}px`;
 
-        lens.style.left = `${x - lensSize / 2}px`;
-        lens.style.top = `${y - lensSize / 2}px`;
+      lens.style.backgroundImage = `url(${screenshot})`;
+      lens.style.backgroundSize = `${document.body.scrollWidth * zoom}px ${document.body.scrollHeight * zoom}px`;
 
-        lens.style.backgroundImage = `url(${screenshot})`;
-        lens.style.backgroundSize = `${document.documentElement.scrollWidth * zoom}px ${document.documentElement.scrollHeight * zoom}px`;
-
-        const bgX = (x + scrollX) * zoom - lensSize / 2;
-        const bgY = (y + scrollY) * zoom - lensSize / 2;
-
-        lens.style.backgroundPosition = `-${bgX}px -${bgY}px`;
+      const bgX = x * zoom - lensSize / 2;
+      const bgY = y * zoom - lensSize / 2;
+      lens.style.backgroundPosition = `-${bgX}px -${bgY}px`;
     };
 
-    // Attach listeners
     document.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("scroll", captureAndSetScreenshot);
-    window.addEventListener("resize", captureAndSetScreenshot);
 
-    // Clean up
     return () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("scroll", captureAndSetScreenshot);
-        window.removeEventListener("resize", captureAndSetScreenshot);
+      window.removeEventListener("scroll", handleUpdate);
+      window.removeEventListener("resize", handleUpdate);
+      document.removeEventListener("mousemove", handleMouseMove);
     };
-    }, [enabled, screenshot]);
+  }, [enabled, screenshot]);
 
   return (
     <>
@@ -65,13 +69,12 @@ function MagnifierToggle() {
           ref={lensRef}
           style={{
             position: "absolute",
-            width: "300px",
-            height: "300px",
+            width: `${lensSize}px`,
+            height: `${lensSize}px`,
             borderRadius: "50%",
-            border: "3px solid #ccc",
+            border: "2px solid #ccc",
             pointerEvents: "none",
             backgroundRepeat: "no-repeat",
-            overflow: 'hidden',
             zIndex: 9999
           }}
         ></div>
@@ -80,19 +83,4 @@ function MagnifierToggle() {
   );
 }
 
-const takeScreenshot = async (setScreenshot) => {
-  const canvas = await html2canvas(document.body, {
-  scrollX: 0,
-  scrollY: 0,
-  windowWidth: document.documentElement.scrollWidth,
-  windowHeight: document.documentElement.scrollHeight,
-  useCORS: true  // Optional: useful if you have images from other domains
-});
-
-
-  const dataURL = canvas.toDataURL();
-  setScreenshot(dataURL);
-};
-
 export default MagnifierToggle;
-

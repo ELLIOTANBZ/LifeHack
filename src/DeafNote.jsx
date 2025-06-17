@@ -11,8 +11,8 @@ const DeafNote = () => {
             placeholder="Write your notes here..."
             rows={6}
             style={{
-                width: "100%",
-                maxWidth: "500px",
+                width: "90%",
+                alignContent: "center",
                 padding: "10px",
                 fontSize: "1rem",
                 border: "1px solid #ccc",
