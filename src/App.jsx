@@ -4,6 +4,8 @@ import CameraFeed from "./CameraFeed.jsx";
 import FileToSpeech from "./FileToSpeech";
 import AccessibleChat from "./AccessibleChat.jsx";
 import MagnifierToggle from "./MagnifierToggle.jsx";
+import DeafNote from "./DeafNote.jsx";
+import DeafCamera from "./DeafCamera.jsx";
 
 function App() {
   const [userMode, setUserMode] = useState('blind'); 
@@ -144,6 +146,10 @@ const toggleMic = () => {
               />
               <button onClick={() => speak(textInput)}>🗣 Speak to Tutor</button>
             </section>
+
+            <DeafNote/>
+            <h3>To see Sign Language Intepretters better</h3>
+            <CameraFeed/>
           </>
           )}
       </main>

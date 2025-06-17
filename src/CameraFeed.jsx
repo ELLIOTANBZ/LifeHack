@@ -4,7 +4,13 @@ function CameraFeed() {
   const videoRef = useRef(null);
   const [cameraOn, setCameraOn] = useState(false);
   const [stream, setStream] = useState(null);
-  const [selectedFilter, setSelectedFilter] = useState("none");
+  const [filters, setFilters] = useState({
+    brightness: 1,
+    contrast: 1,
+    grayscale: 0,
+    invert: 0,
+    });
+  const [showSettings, setShowSettings] = useState(false);
 
   const canvasRef = useRef(null);
 
@@ -59,24 +65,80 @@ function CameraFeed() {
         )}
       </div>
 
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        style={{ width: "320px", height: "240px", border: "2px solid #444", filter: getFilterCSS(selectedFilter) }}
-      />
+    <video
+    ref={videoRef}
+    autoPlay
+    playsInline
+    muted
+    style={{
+        width: "300px",
+        height: "300px",
+        border: "2px solid #444",
+        filter: `
+        brightness(${filters.brightness})
+        contrast(${filters.contrast})
+        grayscale(${filters.grayscale})
+        invert(${filters.invert})
+        `,
+    }}
+    />
 
-      <select
-        aria-label="Select vision support mode"
-        onChange={(e) => setSelectedFilter(e.target.value)}
-        value={selectedFilter}>
-            <option value="none">Normal</option>
-            <option value="invert">Invert Colors</option>
-            <option value="grayscale">Grayscale</option>
-            <option value="low-brightness">Reduce Brightness</option>
-            <option value="high-contrast">High Contrast</option>
-      </select>
+    <button onClick={() => setShowSettings(prev => !prev)} style={{ marginBottom: "10px" }}>
+        {showSettings ? "⚙️ Hide Vision Settings" : "⚙️ Show Vision Settings"}
+    </button>
+
+    {showSettings && (
+    <div style={{ marginBottom: "10px" }}>
+        <label>Brightness: {filters.brightness.toFixed(1)}</label>
+        <input
+        type="range"
+        min="0"
+        max="2"
+        step="0.1"
+        value={filters.brightness}
+        onChange={(e) =>
+            setFilters({ ...filters, brightness: parseFloat(e.target.value) })
+        }
+        />
+
+        <label>Contrast: {filters.contrast.toFixed(1)}</label>
+        <input
+        type="range"
+        min="0"
+        max="3"
+        step="0.1"
+        value={filters.contrast}
+        onChange={(e) =>
+            setFilters({ ...filters, contrast: parseFloat(e.target.value) })
+        }
+        />
+
+        <label>Grayscale: {filters.grayscale.toFixed(1)}</label>
+        <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        value={filters.grayscale}
+        onChange={(e) =>
+            setFilters({ ...filters, grayscale: parseFloat(e.target.value) })
+        }
+        />
+
+        <label>Invert: {filters.invert.toFixed(1)}</label>
+        <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        value={filters.invert}
+        onChange={(e) =>
+            setFilters({ ...filters, invert: parseFloat(e.target.value) })
+        }
+        />
+    </div>
+    )}
+
 
 
       {cameraOn && (
