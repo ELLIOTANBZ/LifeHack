@@ -99,21 +99,22 @@ const toggleMic = () => {
   return (
     <div className="App">
       <header className="app-header">
-        <title>Equal Ground - Accessible Learning for All</title>
+         <h1 id="main-title">Equal Ground - Accessible Tutorials</h1>
+
         <button
-          aria-label="Toggle Blind Mode"
-          onClick={() => setUserMode(userMode === 'blind' ? null : 'blind')}
+           aria-label={userMode === 'blind' ? 'Disable Blind Mode' : 'Enable Blind Mode'}
+           onClick={() => setUserMode(userMode === 'blind' ? null : 'blind')}
         >
-          {userMode === 'blind' ? '👁️ Blind Mode ON' : 'Blind Mode'}
+           {userMode === 'blind' ? '👁️ Blind Mode ON' : 'Blind Mode'}
         </button>
 
-    <button
-      aria-label="Toggle Deaf Mode"
-      onClick={() => setUserMode(userMode === 'deaf' ? null : 'deaf')}
-    >
-      {userMode === 'deaf' ? '🦻 Deaf Mode ON' : 'Deaf Mode'}
-    </button>
-      </header>
+        <button
+           aria-label={userMode === 'deaf' ? 'Disable Deaf Mode' : 'Enable Deaf Mode'}
+           onClick={() => setUserMode(userMode === 'deaf' ? null : 'deaf')}
+         >
+           {userMode === 'deaf' ? '🦻 Deaf Mode ON' : 'Deaf Mode'}
+        </button>
+     </header>
 
       <main className="app-main">
         {userMode === 'blind' && (

@@ -15,14 +15,14 @@
 }
 
 button {
-  margin: 0.5rem;
+  margin: 1.5rem;
   padding: 0.5rem 1rem;
-  font-size: 1rem;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 
 input[type="text"] {
-  font-size: 1rem;
+  font-size: 10rem;
   padding: 0.5rem;
   margin-right: 0.5rem;
 }
