@@ -1,8 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function VoiceAssistant({ setUserMode, setShowChat, setMagnifier, toggleCamera, startCamera, stopCamera, takeSnapshot, adjustFilter }) {
+export default function VoiceAssistant({
+  setUserMode,
+  setShowChat,
+  setMagnifier,
+  toggleCamera,
+  startCamera,
+  stopCamera,
+  takeSnapshot,
+  adjustFilter
+}) {
   const recognitionRef = useRef(null);
-  const [active, setActive] = useState(true); // Always listening by default
+  const [active, setActive] = useState(false); // Starts inactive by default
 
   // Initialize speech recognition
   useEffect(() => {
@@ -68,7 +77,7 @@ export default function VoiceAssistant({ setUserMode, setShowChat, setMagnifier,
     recognitionRef.current = recognition;
   }, [setUserMode, setShowChat, setMagnifier, toggleCamera, startCamera, stopCamera, takeSnapshot, adjustFilter]);
 
-  // Start/Stop recognition based on active state
+  // Start/Stop recognition based on active toggle
   useEffect(() => {
     const recognition = recognitionRef.current;
     if (!recognition) return;
@@ -85,6 +94,25 @@ export default function VoiceAssistant({ setUserMode, setShowChat, setMagnifier,
       console.log("🛑 Speech recognition stopped");
     }
   }, [active]);
+
+  // Push-to-talk with spacebar, but skip if focused on input
+  useEffect(() => {
+    const handleKeydown = (e) => {
+      const activeElement = document.activeElement;
+      const isInputFocused =
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.isContentEditable;
+
+      if (e.code === "Space" && !isInputFocused) {
+        e.preventDefault(); // Only prevent default if not in input
+        setActive(prev => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, []);
 
   const speak = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
@@ -104,7 +132,7 @@ export default function VoiceAssistant({ setUserMode, setShowChat, setMagnifier,
       fontSize: '0.9rem',
       zIndex: 9999
     }}>
-      {active ? "🎙 Listening..." : "🛑 Not Listening"}
+      {active ? "🎙 Listening (Spacebar to stop)" : "🛑 Not Listening (Press Spacebar)"}
     </div>
   );
 }

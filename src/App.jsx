@@ -208,29 +208,9 @@ function App() {
                 {isListening ? "🛑 Stop Mic" : "🎤 Start Mic"}
               </button>
             </div>
-            <div className="section-box speak-to-tutor">
-              <h3>Deaf User Talk</h3>
-              <label htmlFor="deafTextInput">Type your message</label>
-              <input
-                className="deaf-box"
-                id="deafTextInput"
-                type="text"
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-              />
-              <button onClick={() => speak(textInput)}>🗣 Speak to Tutor</button>
-            </div>
-            <div className="section-box">
+            
               <DeafNote />
-            </div>
-            <div className="section-box">
-              <button onClick={() => setShowCamera(prev => !prev)}>
-                {showCamera ? "🔒 Close Camera" : "📷 I can't see my interpreter clearly"}
-              </button>
-              {showCamera && (
-                <CameraFeed />
-              )}
-            </div>
+            
           </>
         )}
       </main>
