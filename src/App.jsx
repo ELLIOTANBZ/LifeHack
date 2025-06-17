@@ -13,7 +13,7 @@ function App() {
   const [transcript, setTranscript] = useState("Waiting for tutor speech...");
   const [isListening, setIsListening] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  const [showCamera, setShowCamera] = useState(true);
+  const [showCamera, setShowCamera] = useState(false);
   const [magnifier, setMagnifier] = useState(false);
 
   const [cameraOn, setCameraOn] = useState(false);

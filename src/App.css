@@ -87,4 +87,7 @@ button:hover {
   color: #ecf0f1; /* Change text color inside the pre block */
 }
 
+label {
+    color: black;
+}
 

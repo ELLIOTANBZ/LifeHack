@@ -133,6 +133,7 @@ function CameraFeed() {
         }
         />
 
+        <br></br>
         <label>Invert: {filters.invert.toFixed(1)}</label>
         <input
         type="range"
