@@ -5,22 +5,17 @@ import FileToSpeech from "./FileToSpeech";
 import AccessibleChat from "./AccessibleChat.jsx";
 import MagnifierToggle from "./MagnifierToggle.jsx";
 import DeafNote from "./DeafNote.jsx";
-import DeafCamera from "./DeafCamera.jsx";
 
 function App() {
-  const [userMode, setUserMode] = useState('blind'); 
+  const [userMode, setUserMode] = useState('blind');
   const [textInput, setTextInput] = useState("");
   const [transcript, setTranscript] = useState("Waiting for tutor speech...");
   const [isListening, setIsListening] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState("none");
   const [showChat, setShowChat] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
 
-
-
   const recognitionRef = useRef(null);
 
-  // Request mic with noise suppression
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({
       audio: {
@@ -28,21 +23,18 @@ function App() {
         noiseSuppression: true,
         autoGainControl: true
       }
-    }).catch((err) => {
+    }).catch(err => {
       console.error("Mic permission denied or unavailable:", err);
     });
   }, []);
 
-  // Initialize Speech Recognition
   useEffect(() => {
     if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
       alert("Sorry, your browser doesn't support Speech Recognition.");
       return;
     }
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = false;
@@ -52,18 +44,16 @@ function App() {
       let interimTranscript = "";
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         const speechResult = event.results[i];
-
         if (!speechResult[0] || speechResult[0].transcript.trim().length < 2) continue;
-
         if (speechResult.isFinal) {
-          setTranscript((prev) => prev + " " + speechResult[0].transcript);
+          setTranscript(prev => prev + " " + speechResult[0].transcript);
         } else {
           interimTranscript += speechResult[0].transcript;
         }
       }
 
       if (interimTranscript) {
-        setTranscript((prev) => prev + " " + interimTranscript);
+        setTranscript(prev => prev + " " + interimTranscript);
       }
     };
 
@@ -74,110 +64,123 @@ function App() {
     recognitionRef.current = recognition;
   }, []);
 
-const toggleMic = () => {
-  const recognition = recognitionRef.current;
-  if (!recognition) return;
+  const toggleMic = () => {
+    const recognition = recognitionRef.current;
+    if (!recognition) return;
 
-  if (isListening) {
-    recognition.onend = null; 
-    recognition.stop();
-    setIsListening(false);
-    setTranscript((prev) => prev + " ⏹️ Mic stopped.");
-  } else {
-    recognition.onend = () => {
-      if (isListening) {
-        recognition.start(); 
-      }
-    };
-    recognition.start();
-    setTranscript("🎙 Listening...");
-    setIsListening(true);
-  }
-};
+    if (isListening) {
+      recognition.onend = null;
+      recognition.stop();
+      setIsListening(false);
+      setTranscript(prev => prev + " ⏹️ Mic stopped.");
+    } else {
+      recognition.onend = () => {
+        if (isListening) recognition.start();
+      };
+      recognition.start();
+      setTranscript("🎙 Listening...");
+      setIsListening(true);
+    }
+  };
 
+  const toggleCamera = () => setShowCamera(prev => !prev);
 
   return (
     <div className="App">
       <header className="app-header">
-         <h1 id="main-title">Equal Ground - Accessible Tutorials</h1>
+        <h1 id="main-title">Equal Ground - Accessible Tutorials</h1>
+        <div className="mode-buttons">
+          <button
+            aria-label={userMode === 'blind' ? 'Disable Blind Mode' : 'Enable Blind Mode'}
+            onClick={() => setUserMode(userMode === 'blind' ? null : 'blind')}
+          >
+            {userMode === 'blind' ? '👁️ Blind Mode ON' : 'Blind Mode'}
+          </button>
 
-        <button
-           aria-label={userMode === 'blind' ? 'Disable Blind Mode' : 'Enable Blind Mode'}
-           onClick={() => setUserMode(userMode === 'blind' ? null : 'blind')}
-        >
-           {userMode === 'blind' ? '👁️ Blind Mode ON' : 'Blind Mode'}
-        </button>
-
-        <button
-           aria-label={userMode === 'deaf' ? 'Disable Deaf Mode' : 'Enable Deaf Mode'}
-           onClick={() => setUserMode(userMode === 'deaf' ? null : 'deaf')}
-         >
-           {userMode === 'deaf' ? '🦻 Deaf Mode ON' : 'Deaf Mode'}
-        </button>
-     </header>
+          <button
+            aria-label={userMode === 'deaf' ? 'Disable Deaf Mode' : 'Enable Deaf Mode'}
+            onClick={() => setUserMode(userMode === 'deaf' ? null : 'deaf')}
+          >
+            {userMode === 'deaf' ? '🦻 Deaf Mode ON' : 'Deaf Mode'}
+          </button>
+        </div>
+      </header>
 
       <main className="app-main">
         {userMode === 'blind' && (
-          <>
-          <MagnifierToggle/>
-          <button
-            onClick={() => setShowCamera(prev => !prev)}
-            aria-expanded={showCamera}
-            aria-controls="camera-section"
-          >
-            {showCamera ? "🔒 Close Camera Section" : "📷 Camera Section for better visual accommodations"}
-          </button>
+          <section aria-label="Blind Mode Tools">
+            <MagnifierToggle />
 
-          {showCamera && (
-            <div id="camera-section" role="region" aria-label="Camera Interaction Area">
-              <CameraFeed />
-            </div>
-          )}
-          <FileToSpeech/>
-          </>
+            <button
+              onClick={toggleCamera}
+              aria-expanded={showCamera}
+              aria-controls="camera-section"
+            >
+              {showCamera ? "🔒 Close Camera Section" : "📷 Open Camera for Visual Support"}
+            </button>
+
+            {showCamera && (
+              <div id="camera-section" role="region" aria-label="Camera Interaction Area">
+                <CameraFeed />
+              </div>
+            )}
+
+            <FileToSpeech />
+          </section>
         )}
 
         {userMode === 'deaf' && (
-          <>
-            <button onClick={() => setShowChat(!showChat)}>💬 Ask Tutor a Question</button>
-            {showChat && <AccessibleChat />}
-        
+          <section aria-label="Deaf Mode Tools">
+            <button
+              className="ask-tutor-button"
+              onClick={() => setShowChat(!showChat)}
+            >
+              💬 Ask Tutor a Question
+            </button>
 
-            <section className="transcript-area" aria-live="polite">
+            {showChat && <AccessibleChat />}
+
+            <div className="transcript-area" aria-live="polite">
               <h3>Live Transcript</h3>
               <p>{transcript}</p>
               <button onClick={toggleMic}>
                 {isListening ? "🛑 Stop Mic" : "🎤 Start Mic"}
               </button>
-            </section>
+            </div>
 
-            <section className="speak-to-tutor">
-              <h3>Deaf User Talk</h3>
+            <div className="speak-to-tutor">
+              <h3 id="deaf-user-talk-title">Deaf User Talk</h3>
+              <label htmlFor="deafTextInput">Type your message</label>
               <input
+                id="deafTextInput"
                 type="text"
-                aria-label="Type your message"
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
               />
-              <button onClick={() => speak(textInput)}>🗣 Speak to Tutor</button>
-            </section>
-
-            <DeafNote/>
-            <button
-            onClick={() => setShowCamera(prev => !prev)}
-            aria-expanded={showCamera}
-            aria-controls="camera-section"
-          >
-            {showCamera ? "🔒 Close Camera Section" : "(📷 Camera Section) I am unable to see my sign language intepretter clearly"}
-          </button>
-
-          {showCamera && (
-            <div id="camera-section" role="region" aria-label="Camera Interaction Area">
-              <CameraFeed />
+              <button onClick={() => speak(textInput)} aria-label="Speak message to tutor">
+                🗣 Speak to Tutor
+              </button>
             </div>
-          )}
-          </>
-          )}
+
+            <DeafNote />
+
+            <button
+              onClick={toggleCamera}
+              aria-expanded={showCamera}
+              aria-controls="camera-section"
+            >
+              {showCamera
+                ? "🔒 Close Camera Section"
+                : "(📷) I can't see my sign interpreter clearly"}
+            </button>
+
+            {showCamera && (
+              <div id="camera-section" role="region" aria-label="Camera Interaction Area">
+                <CameraFeed />
+              </div>
+            )}
+          </section>
+        )}
       </main>
     </div>
   );
