@@ -9,7 +9,6 @@ function AccessibleChat() {
   const [availableMics, setAvailableMics] = useState([]);
   const [preferredMic, setPreferredMic] = useState(null);
   const [micStream, setMicStream] = useState(null);
-  const [signVideoUrl, setSignVideoUrl] = useState("");
 
   // Initialize STT
   useEffect(() => {

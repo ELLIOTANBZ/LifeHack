@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import './App.css';
 import CameraFeed from "./CameraFeed.jsx";
 import FileToSpeech from "./FileToSpeech";
-import AccessibleChat from "./AccessibleChat";
+import AccessibleChat from "./AccessibleChat.jsx";
+import MagnifierToggle from "./MagnifierToggle.jsx";
 
 function App() {
   const [textInput, setTextInput] = useState("");
@@ -95,6 +96,7 @@ const toggleMic = () => {
       <header className="app-header">
         <h1>EduBridge – Accessible Tutorials</h1>
         <button aria-label="Toggle Blind Mode">Blind Mode</button>
+        <MagnifierToggle/>
         <button aria-label="Toggle Deaf Mode">Deaf Mode</button>
       </header>
 

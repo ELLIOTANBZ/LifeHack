@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@jitsi/rnnoise-wasm": "^0.2.1",
+    "@sign-speak/react-sdk": "^0.7.3",
+    "html2canvas": "^1.4.1",
     "mammoth": "^1.9.1",
     "pdfjs-dist": "^5.3.31",
     "react": "^19.1.0",
