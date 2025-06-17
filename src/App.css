@@ -1,0 +1,48 @@
+.App {
+  font-family: sans-serif;
+  background: #f4f4f4;
+  padding: 1rem;
+}
+
+.app-header {
+  background: #a75353;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+input[type="text"] {
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.slide-area, .transcript-area, .speak-to-tutor {
+  background: rgb(21, 14, 14);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.camera-container {
+  padding: 10px;
+  background-color: #7b7575;
+  border-radius: 8px;
+  width: fit-content;
+}
